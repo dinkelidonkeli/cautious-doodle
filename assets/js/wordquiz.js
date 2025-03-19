@@ -21,13 +21,37 @@ document.addEventListener('DOMContentLoaded', () => {
     'images/praise/1.webp',
     'images/praise/2.webp',
     'images/praise/3.webp'
+    'images/praise/4.webp'
+    'images/praise/5.webp'
+    'images/praise/6.webp'
+    'images/praise/7.webp'
+    'images/praise/8.webp'
   ];
-  // Setting focus to text area
-  document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('textArea').focus();
-  });
+ 
+//Load file
+const fileInput = document.getElementById('fileInput');
+
+fileInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      const fileContent = event.target.result;
+      textArea.value = fileContent; // Täytetään suoraan textareaan!
+    };
+    reader.readAsText(file);
+  }
+});
 
   // Start quiz
+  // Allow Enter key to start quiz from textarea
+  textArea.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      startButton.click();
+    }
+  });
+  //Start with button
   startButton.addEventListener('click', (e) => {
     e.preventDefault();
     const inputText = textArea.value;
@@ -99,7 +123,8 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       const percentage = Math.round((score / wordPairs.length) * 100);
       feedback.textContent = `Quiz completed! Your score: ${score}/${wordPairs.length} (${percentage}%).`;
-
+      submitButton.style.display = 'none'; // hide submit
+      restartButton.style.display = 'inline-block'; // show restart
       if (percentage >= 70) {
         feedback.textContent += " Fantastic work!";
         confetti({

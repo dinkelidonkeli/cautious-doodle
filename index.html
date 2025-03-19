@@ -59,7 +59,9 @@
 								<p>So let’s dive into the fun world of languages—each word learned is a step closer to becoming a language superstar!”</p>
 								<p>Please give list of words in - separated format (cat - kissa).</p>
 								<form id="wordForm">
-									<textarea name="wordlist" id="wordList" rows="6" placeholder="Drop your word list here..." style="width: 100%; max-width: 600px; margin-bottom: 1rem;"></textarea>
+									<input type="file" id="fileInput" accept=".txt" style="margin-top: 1rem;" />
+									<br />
+									<textarea name="wordlist" id="wordList" rows="6" placeholder="Or drop your word list here..." style="width: 100%; max-width: 600px; margin-bottom: 1rem;" autofocus></textarea>
 									<br />
 									<a href="#" class="button primary" id="startWordQuiz">Start Word Quiz</a>
 								  </form>
@@ -73,7 +75,7 @@
   									<a href="#" class="button" id="restartQuiz" style="display:none;">Restart</a>
 								</div>
 								<!-- Praise pop-up -->
-								<div id="popupReward" style="display:none; position:fixed; top:70%; left:50%; transform:translate(-50%, -50%); background:black; padding:1rem; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.3); z-index:1000;">
+								<div id="popupReward" style="display:none; position:fixed; top:70%; left:50%; transform:translate(-50%, -50%); background:black; padding:1rem; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.3); z-index:1000">
 									<img id="rewardGif" style="max-width:150px;" />
 									<br />
 									<button id="closePopup" class="button small">Close</button>
