@@ -28,7 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
     'images/praise/5.webp',
     'images/praise/6.webp',
     'images/praise/7.webp',
-    'images/praise/8.webp'
+    'images/praise/8.webp',
+    'images/praise/9.webp'
   ];
 
   // --- File Upload ---
