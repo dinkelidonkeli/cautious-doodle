@@ -1,2 +1,0 @@
-# cautious-doodle
-Nellin sanakysely
