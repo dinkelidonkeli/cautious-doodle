@@ -58,11 +58,20 @@
 								<p>This app helps you practice and memorize vocabulary for your language quizzes. Enter your word list and test yourself to prepare easily and effectively. The more you practice, the sharper your skills will become – and who knows, maybe even earn a little bonus from dad as a reward...</p>
 								<p>So let’s dive into the fun world of languages—each word learned is a step closer to becoming a language superstar!”</p>
 								<p>Please give list of words in - separated format (cat - kissa).</p>
-								<form>
+								<form id="wordForm">
 									<textarea name="wordlist" id="wordList" rows="6" placeholder="Drop your word list here..." style="width: 100%; max-width: 600px; margin-bottom: 1rem;"></textarea>
 									<br />
 									<a href="#" class="button primary" id="startWordQuiz">Start Word Quiz</a>
 								  </form>
+								  <div id="quizSection" style="display:none;">
+									<h3 id="question"></h3>
+									<input type="text" id="userAnswer" placeholder="Your answer">
+									<br />
+									<a href="#" class="button primary" id="submitAnswer">Submit Answer</a>
+									<p id="feedback"></p>
+									<!-- Restart button here -->
+  									<a href="#" class="button" id="restartQuiz" style="display:none;">Restart</a>  
+								</div>
 							</article>
 
 						<!-- About -->
@@ -364,6 +373,6 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
 			<script src="assets/js/wordquiz.js"></script>
-
+			<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 	</body>
 </html>
