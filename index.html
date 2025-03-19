@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sanakysely</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2rem; }
+    .word { font-size: 1.5rem; margin-bottom: 1rem; }
+    .hidden { display: none; }
+    button { margin-top: 1rem; }
+  </style>
+</head>
+<body>
+
+<h1>Sanakysely</h1>
+
+<div id="quiz">
+  <p class="word" id="question"></p>
+  <input type="text" id="answer" placeholder="Kirjoita englanniksi">
+  <button onclick="checkAnswer()">Tarkista</button>
+  <p id="feedback"></p>
+  <button onclick="nextWord()">Seuraava sana</button>
+</div>
+
+<script>
+const words = [
+  { suomi: "onnellisuus", englanti: "happiness" },
+  { suomi: "auringonpaiste", englanti: "sunshine" },
+  { suomi: "ranta", englanti: "beach" },
+  { suomi: "koiranpentu", englanti: "puppy" },
+  { suomi: "sydän", englanti: "heart" },
+  { suomi: "keuhkot", englanti: "lungs" },
+  { suomi: "onneton", englanti: "unhappy" },
+  { suomi: "turisti", englanti: "tourist" },
+  { suomi: "jutella", englanti: "chat" },
+  { suomi: "liike", englanti: "movement" }
+];
+
+let currentWord = {};
+
+function nextWord() {
+  currentWord = words[Math.floor(Math.random() * words.length)];
+  document.getElementById('question').textContent = `Mikä on englanniksi: ${currentWord.suomi}?`;
+  document.getElementById('answer').value = '';
+  document.getElementById('feedback').textContent = '';
+}
+
+function checkAnswer() {
+  const userAnswer = document.getElementById('answer').value.trim().toLowerCase();
+  const correctAnswer = currentWord.englanti.toLowerCase();
+  if (userAnswer === correctAnswer) {
+    document.getElementById('feedback').textContent = 'Oikein!';
+  } else {
+    document.getElementById('feedback').textContent = `Väärin, oikea vastaus: ${currentWord.englanti}`;
+  }
+}
+
+window.onload = nextWord;
+</script>
+
+</body>
+</html>

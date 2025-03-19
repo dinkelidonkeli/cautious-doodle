@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sanakysely</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2rem; }
+    .word { font-size: 1.5rem; margin-bottom: 1rem; }
+    .hidden { display: none; }
+    button { margin-top: 1rem; }
+  </style>
+</head>
+<body>
+
+<h1>Sanakysely</h1>
+
+<div id="inputArea">
+  <p>Syötä suomi-englanti sanalista muodossa: suomi,englanti (yksi per rivi)</p>
+  <textarea id="wordList" rows="10" cols="50"></textarea><br>
+  <button onclick="startQuiz()">Aloita</button>
+</div>
+
+<div id="quiz" class="hidden">
+  <p class="word" id="question"></p>
+  <input type="text" id="answer" placeholder="Kirjoita englanniksi">
+  <button onclick="checkAnswer()">Tarkista</button>
+  <p id="feedback"></p>
+  <button onclick="nextWord()">Seuraava sana</button>
+</div>
+
+<script>
+let words = [];
+let currentWord = {};
+
+function startQuiz() {
+  const lines = document.getElementById('wordList').value.trim().split('\n');
+  words = lines.map(line => {
+    const parts = line.split(',');
+    return { suomi: parts[0].trim(), englanti: parts[1].trim() };
+  });
+  document.getElementById('inputArea').classList.add('hidden'); // Piilottaa syöttöalueen
+  nextWord();
+  document.getElementById('quiz').classList.remove('hidden');
+}
+
+function nextWord() {
+  if (words.length === 0) return;
+  currentWord = words[Math.floor(Math.random() * words.length)];
+  document.getElementById('question').textContent = `Mikä on englanniksi: ${currentWord.suomi}?`;
+  document.getElementById('answer').value = '';
+  document.getElementById('feedback').textContent = '';
+}
+
+function checkAnswer() {
+  const userAnswer = document.getElementById('answer').value.trim().toLowerCase();
+  const correctAnswer = currentWord.englanti.toLowerCase();
+  if (userAnswer === correctAnswer) {
+    document.getElementById('feedback').textContent = 'Oikein!';
+  } else {
+    document.getElementById('feedback').textContent = `Väärin, oikea vastaus: ${currentWord.englanti}`;
+  }
+}
+</script>
+
+</body>
+</html>
+
+
+dHBC9r@phmm#3Ez5HmYN
