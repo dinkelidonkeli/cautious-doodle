@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // Element references
+  // --- Element references ---
   const startButton = document.getElementById('startWordQuiz');
-  const textArea = document.getElementById('wordList');
+  const textarea = document.getElementById('wordList');
   const quizSection = document.getElementById('quizSection');
   const question = document.getElementById('question');
   const submitButton = document.getElementById('submitAnswer');
@@ -11,13 +11,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const rewardGif = document.getElementById('rewardGif');
   const popupReward = document.getElementById('popupReward');
   const closePopup = document.getElementById('closePopup');
-  const fileInput = document.getElementById('fileInput');
+  const fileInput = document.getElementById('fileInput'); // File upload input
 
-  let wordPairs = [];
+  // --- Data ---
+  let wordPairs = []; // Array of {source, target}
   let currentIndex = 0;
   let score = 0;
   let attempts = 0;
 
+  // List of reward images
   const rewardImages = [
     'images/praise/1.webp',
     'images/praise/2.webp',
@@ -28,32 +30,26 @@ document.addEventListener('DOMContentLoaded', () => {
     'images/praise/7.webp',
     'images/praise/8.webp'
   ];
- 
-//Load file
-fileInput.addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function(event) {
-      const fileContent = event.target.result;
-      textArea.value = fileContent; // Täytetään suoraan textareaan!
-    };
-    reader.readAsText(file);
-  }
-});
 
-  // Start quiz
-  // Allow Enter key to start quiz from textarea
-  textArea.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      startButton.click();
+  // --- File Upload ---
+  fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const fileContent = event.target.result;
+        textarea.value = fileContent; // Fill textarea with file content
+      };
+      reader.readAsText(file);
     }
   });
-  //Start with button
+
+  // --- Start quiz ---
   startButton.addEventListener('click', (e) => {
     e.preventDefault();
-    const inputText = textArea.value;
+
+    // Parse word list from textarea
+    const inputText = textarea.value;
     wordPairs = inputText.split('\n').map(line => {
       const parts = line.split('-').map(p => p.trim());
       return { source: parts[0], target: parts[1] };
@@ -67,15 +63,17 @@ fileInput.addEventListener('change', (e) => {
       quizSection.style.display = 'block';
       restartButton.style.display = 'none';
       popupReward.style.display = 'none';
+      submitButton.style.display = 'inline-block'; // Show submit button
       showWord();
     }
   });
 
-  // Submit answer
+  // --- Submit answer ---
   submitButton.addEventListener('click', (e) => {
     e.preventDefault();
+
     const answer = userAnswer.value.trim();
-    const correct = wordPairs[currentIndex].target;
+    const correct = question.dataset.correct; // Get correct answer based on random direction
 
     if (answer.toLowerCase() === correct.toLowerCase()) {
       feedback.textContent = "Great job! That's correct!";
@@ -96,7 +94,7 @@ fileInput.addEventListener('change', (e) => {
     }
   });
 
-  // Allow Enter key
+  // --- Allow Enter key for submitting answer ---
   userAnswer.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -104,26 +102,43 @@ fileInput.addEventListener('change', (e) => {
     }
   });
 
-  // Show word
+  // --- Allow Enter key for starting quiz ---
+  textarea.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      startButton.click();
+    }
+  });
+
+  // --- Show current word (random direction) ---
   function showWord() {
-    question.textContent = `Translate: ${wordPairs[currentIndex].source}`;
+    const askSource = Math.random() < 0.5; // 50% chance to swap
+
+    if (askSource) {
+      question.textContent = `Translate: ${wordPairs[currentIndex].source}`;
+      question.dataset.correct = wordPairs[currentIndex].target;
+    } else {
+      question.textContent = `Translate: ${wordPairs[currentIndex].target}`;
+      question.dataset.correct = wordPairs[currentIndex].source;
+    }
+
+    userAnswer.value = '';
     userAnswer.focus();
   }
 
-  // Move to next or finish
+  // --- Move to next word or finish ---
   function moveToNextWord() {
     currentIndex++;
     if (currentIndex < wordPairs.length) {
       setTimeout(() => {
         feedback.textContent = '';
-        userAnswer.value = '';
         showWord();
       }, 1000);
     } else {
       const percentage = Math.round((score / wordPairs.length) * 100);
       feedback.textContent = `Quiz completed! Your score: ${score}/${wordPairs.length} (${percentage}%).`;
-      submitButton.style.display = 'none'; // hide submit
-      restartButton.style.display = 'inline-block'; // show restart
+
+      // Confetti + reward if ≥ 70%
       if (percentage >= 70) {
         feedback.textContent += " Fantastic work!";
         confetti({
@@ -133,16 +148,17 @@ fileInput.addEventListener('change', (e) => {
           origin: { y: 1 }
         });
 
-        // Random GIF pop-up
         const randomIndex = Math.floor(Math.random() * rewardImages.length);
         rewardGif.src = rewardImages[randomIndex];
         popupReward.style.display = 'block';
       }
+
+      submitButton.style.display = 'none'; // Hide submit button
       restartButton.style.display = 'inline-block';
     }
   }
 
-  // Restart quiz
+  // --- Restart quiz ---
   restartButton.addEventListener('click', (e) => {
     e.preventDefault();
     document.getElementById('wordForm').style.display = 'block';
@@ -150,14 +166,15 @@ fileInput.addEventListener('change', (e) => {
     restartButton.style.display = 'none';
     feedback.textContent = '';
     userAnswer.value = '';
-    textArea.value = '';
+    textarea.value = '';
     popupReward.style.display = 'none';
+    submitButton.style.display = 'inline-block'; // Show submit again
     score = 0;
     attempts = 0;
-    textArea.focus();
+    textarea.focus();
   });
 
-  // Close popup
+  // --- Close reward pop-up ---
   closePopup.addEventListener('click', () => {
     popupReward.style.display = 'none';
   });
