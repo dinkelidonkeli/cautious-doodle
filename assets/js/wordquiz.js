@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   // Element references
   const startButton = document.getElementById('startWordQuiz');
-  const textarea = document.getElementById('wordList');
+  const textArea = document.getElementById('wordList');
   const quizSection = document.getElementById('quizSection');
   const question = document.getElementById('question');
   const submitButton = document.getElementById('submitAnswer');
@@ -18,15 +18,19 @@ document.addEventListener('DOMContentLoaded', () => {
   let attempts = 0;
 
   const rewardImages = [
-    'images/praise/dance1.webp',
-    'images/praise/cheer.webp',
-    'images/praise/superstar.webp'
+    'images/praise/1.webp',
+    'images/praise/2.webp',
+    'images/praise/3.webp'
   ];
+  // Setting focus to text area
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('textArea').focus();
+  });
 
   // Start quiz
   startButton.addEventListener('click', (e) => {
     e.preventDefault();
-    const inputText = textarea.value;
+    const inputText = textArea.value;
     wordPairs = inputText.split('\n').map(line => {
       const parts = line.split('-').map(p => p.trim());
       return { source: parts[0], target: parts[1] };
@@ -122,11 +126,11 @@ document.addEventListener('DOMContentLoaded', () => {
     restartButton.style.display = 'none';
     feedback.textContent = '';
     userAnswer.value = '';
-    textarea.value = '';
+    textArea.value = '';
     popupReward.style.display = 'none';
     score = 0;
     attempts = 0;
-    textarea.focus();
+    textArea.focus();
   });
 
   // Close popup
