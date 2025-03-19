@@ -1,0 +1,12 @@
+[
+  { "source": "cat", "target": "kissa" },
+  { "source": "dog", "target": "koira" },
+  { "source": "sun", "target": "aurinko" },
+  { "source": "moon", "target": "kuu" },
+  { "source": "tree", "target": "puu" },
+  { "source": "book", "target": "kirja" },
+  { "source": "car", "target": "auto" },
+  { "source": "bird", "target": "lintu" },
+  { "source": "house", "target": "talo" },
+  { "source": "water", "target": "vesi" }
+]
