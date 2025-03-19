@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const rewardGif = document.getElementById('rewardGif');
   const popupReward = document.getElementById('popupReward');
   const closePopup = document.getElementById('closePopup');
+  const fileInput = document.getElementById('fileInput');
 
   let wordPairs = [];
   let currentIndex = 0;
@@ -20,17 +21,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const rewardImages = [
     'images/praise/1.webp',
     'images/praise/2.webp',
-    'images/praise/3.webp'
-    'images/praise/4.webp'
-    'images/praise/5.webp'
-    'images/praise/6.webp'
-    'images/praise/7.webp'
+    'images/praise/3.webp',
+    'images/praise/4.webp',
+    'images/praise/5.webp',
+    'images/praise/6.webp',
+    'images/praise/7.webp',
     'images/praise/8.webp'
   ];
  
 //Load file
-const fileInput = document.getElementById('fileInput');
-
 fileInput.addEventListener('change', (e) => {
   const file = e.target.files[0];
   if (file) {
