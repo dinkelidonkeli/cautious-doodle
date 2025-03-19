@@ -77,11 +77,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (answer.toLowerCase() === correct.toLowerCase()) {
       feedback.textContent = "Great job! That's correct!";
+      feedback.classList.remove('incorrectAnswer');
+      feedback.classList.add('correctAnswer'); // Add green style
       score++;
       attempts = 0;
       moveToNextWord();
     } else {
       attempts++;
+      feedback.classList.remove('correctAnswer'); // Remove possible green
+      feedback.classList.add('incorrectAnswer'); // Add red style
       if (attempts < 3) {
         feedback.textContent = `Almost there! Try again! (${attempts}/3)`;
         userAnswer.value = '';
@@ -112,6 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Show current word (random direction) ---
   function showWord() {
+    feedback.classList.remove('correctAnswer', 'incorrectAnswer'); // Reset feedback text style
     const askSource = Math.random() < 0.5; // 50% chance to swap
 
     if (askSource) {

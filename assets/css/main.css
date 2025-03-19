@@ -1658,3 +1658,11 @@ input, select, textarea {
 		body.is-preload #footer {
 			opacity: 0;
 		}
+/* Other CSS stuff */
+	.correctAnswer {
+		color: #00c853; /* Green */
+	}
+	
+	.incorrectAnswer {
+		color: #ffa726; /* Red */
+	}
