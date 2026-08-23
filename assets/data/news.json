@@ -1,0 +1,32 @@
+[
+  {
+    "title": "OCR word import",
+    "label": "Under construction",
+    "body": "Snap a photo of a printed word list and let the app read it for you. This needs a translation backend to work, so it's on hold for now — the button's in place, but disabled.",
+    "date": "2026-08-23"
+  },
+  {
+    "title": "Confetti for correct answers",
+    "label": "Update",
+    "body": "Nailing an answer now triggers a confetti burst plus a random praise image, so quiz streaks feel like an actual celebration.",
+    "date": "2026-08-23"
+  },
+  {
+    "title": "Starter word list included",
+    "label": "Update",
+    "body": "New here? A ready-made English–Finnish word list ships with the app, so you can try a quiz immediately without typing anything.",
+    "date": "2026-08-23"
+  },
+  {
+    "title": "Translator proxy (not yet live)",
+    "label": "Behind the scenes",
+    "body": "A small Node/Express proxy that talks to Azure Translator lives in the repo, ready to power OCR word import — it just isn't hooked up to the deployed site yet.",
+    "date": "2026-08-23"
+  },
+  {
+    "title": "Custom quiz images",
+    "label": "Update",
+    "body": "You can attach your own picture to a quiz round, making each session a little more personal — and easier to remember.",
+    "date": "2026-08-23"
+  }
+]

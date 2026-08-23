@@ -94,38 +94,8 @@
 				<!-- News -->
 					<div id="news-main">
 						<h2 class="major">News</h2>
-						<div class="news-grid">
-
-							<div class="news-card">
-								<span class="news-date">Under construction</span>
-								<h3>OCR word import</h3>
-								<p>Snap a photo of a printed word list and let the app read it for you. This needs a translation backend to work, so it's on hold for now — the button's in place, but disabled.</p>
-							</div>
-
-							<div class="news-card">
-								<span class="news-date">Update</span>
-								<h3>Confetti for correct answers</h3>
-								<p>Nailing an answer now triggers a confetti burst plus a random praise image, so quiz streaks feel like an actual celebration.</p>
-							</div>
-
-							<div class="news-card">
-								<span class="news-date">Update</span>
-								<h3>Starter word list included</h3>
-								<p>New here? A ready-made English–Finnish word list ships with the app, so you can try a quiz immediately without typing anything.</p>
-							</div>
-
-							<div class="news-card">
-								<span class="news-date">Behind the scenes</span>
-								<h3>Translator proxy (not yet live)</h3>
-								<p>A small Node/Express proxy that talks to Azure Translator lives in the repo, ready to power OCR word import — it just isn't hooked up to the deployed site yet.</p>
-							</div>
-
-							<div class="news-card">
-								<span class="news-date">Update</span>
-								<h3>Custom quiz images</h3>
-								<p>You can attach your own picture to a quiz round, making each session a little more personal — and easier to remember.</p>
-							</div>
-
+						<div class="news-grid" id="newsGrid">
+							<p id="newsLoading" style="color: rgba(255,255,255,0.5);">Loading news…</p>
 						</div>
 					</div>
 
@@ -145,5 +115,40 @@
 			<script src="assets/js/breakpoints.min.js"></script>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
+			<script>
+				(async function loadNews() {
+					const grid = document.getElementById('newsGrid');
+					const loading = document.getElementById('newsLoading');
+					try {
+						const response = await fetch('assets/data/news.json');
+						if (!response.ok) throw new Error('HTTP ' + response.status);
+						const items = await response.json();
+
+						if (!Array.isArray(items) || items.length === 0) {
+							loading.textContent = 'No news yet.';
+							return;
+						}
+
+						grid.innerHTML = items.map(function(item) {
+							return '<div class="news-card">' +
+								'<span class="news-date">' + escapeHtml(item.label || 'Update') + '</span>' +
+								'<h3>' + escapeHtml(item.title || '') + '</h3>' +
+								'<p>' + escapeHtml(item.body || '') + '</p>' +
+								'</div>';
+						}).join('');
+					} catch (err) {
+						console.error('Failed to load news:', err);
+						loading.textContent = 'Could not load news right now.';
+					}
+				})();
+
+				function escapeHtml(str) {
+					return String(str)
+						.replace(/&/g, '&amp;')
+						.replace(/</g, '&lt;')
+						.replace(/>/g, '&gt;')
+						.replace(/"/g, '&quot;');
+				}
+			</script>
 	</body>
 </html>

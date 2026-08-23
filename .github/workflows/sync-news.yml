@@ -1,0 +1,38 @@
+name: Sync ajankohtaista from Google Drive
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Sync news from Google Drive
+        env:
+          GDRIVE_API_KEY: ${{ secrets.GDRIVE_API_KEY }}
+          GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: node scripts/sync-news.mjs
+
+      - name: Commit and push if changed
+        run: |
+          if git diff --quiet -- assets/data/news.json assets/data/news-sync-state.json; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git config user.name "news-sync-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add assets/data/news.json assets/data/news-sync-state.json
+          git commit -m "Sync ajankohtaista from Google Drive"
+          git push
