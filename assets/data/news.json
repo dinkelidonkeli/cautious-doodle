@@ -1,5 +1,12 @@
 [
   {
+    "title": "Test entry",
+    "label": "Placeholder",
+    "body": "This is just a placeholder note, not a real update. Nothing to see here yet.",
+    "image": "images/news/testihomma1.png",
+    "date": "2026-08-23"
+  },
+  {
     "title": "OCR word import",
     "label": "Under construction",
     "body": "Snap a photo of a printed word list and let the app read it for you. This needs a translation backend to work, so it's on hold for now — the button's in place, but disabled.",
