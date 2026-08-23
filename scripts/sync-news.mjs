@@ -218,7 +218,7 @@ ${rawText.trim().slice(0, 4000)}
     },
     body: JSON.stringify({
       model: CLAUDE_MODEL,
-      max_tokens: 400,
+      max_tokens: 1024,
       messages: [{ role: 'user', content: prompt }]
     })
   });
@@ -228,6 +228,10 @@ ${rawText.trim().slice(0, 4000)}
   }
 
   const data = await res.json();
+  if (data.stop_reason === 'max_tokens') {
+    throw new Error(`Claude's response was cut off (hit max_tokens) before finishing the JSON.`);
+  }
+
   // content can include non-text blocks (e.g. thinking) before the actual
   // text reply, so find the first text block rather than assuming index 0.
   const textBlock = (data.content || []).find((b) => b.type === 'text');
