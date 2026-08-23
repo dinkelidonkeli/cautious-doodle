@@ -221,10 +221,13 @@ ${rawText.trim().slice(0, 4000)}
   }
 
   const data = await res.json();
-  const text = data.content?.[0]?.text ?? '';
+  // content can include non-text blocks (e.g. thinking) before the actual
+  // text reply, so find the first text block rather than assuming index 0.
+  const textBlock = (data.content || []).find((b) => b.type === 'text');
+  const text = textBlock?.text ?? '';
   const jsonMatch = text.match(/\{[\s\S]*\}/);
   if (!jsonMatch) {
-    throw new Error(`Could not find JSON in Claude's response: ${text}`);
+    throw new Error(`Could not find JSON in Claude's response. Full response: ${JSON.stringify(data).slice(0, 2000)}`);
   }
 
   const card = JSON.parse(jsonMatch[0]);
