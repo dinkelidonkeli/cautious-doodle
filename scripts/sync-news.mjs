@@ -202,6 +202,8 @@ Rules:
 - title: max ~6 words, no trailing punctuation.
 - label: 1-3 words, a short category tag (e.g. "Update", "Behind the scenes", "Under construction").
 - body: 2-3 short sentences, friendly and concise, written in the same voice as the examples.
+- Only rephrase/tighten what's actually in the raw draft below — do not invent facts, features, numbers, or events that aren't there. Match the examples' TONE, not their CONTENT.
+- If the raw draft is very short, vague, or just placeholder/test text, keep the card equally minimal and generic (e.g. title "Test entry", body that plainly says it's a test/placeholder) rather than padding it out with invented specifics.
 - Respond with ONLY a JSON object with exactly the keys "title", "label", "body". No markdown code fences, no extra text.
 
 Raw draft:
