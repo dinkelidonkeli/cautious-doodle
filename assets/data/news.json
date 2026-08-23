@@ -1,5 +1,12 @@
 [
   {
+    "title": "Dark theme and faster loading",
+    "label": "Update",
+    "body": "The app now has a dark theme option, plus we sped up loading times. Small tweaks, but they make quizzing feel a lot smoother.",
+    "image": "images/news/testihomma2.png",
+    "date": "2026-08-23"
+  },
+  {
     "title": "Test entry",
     "label": "Placeholder",
     "body": "This is just a placeholder note, not a real update. Nothing to see here yet.",
