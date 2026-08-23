@@ -1,23 +1,40 @@
 // Syncs the "News" section from a Google Drive folder.
 //
-// Flow: find the newest file in the Drive folder -> skip if already
-// processed -> download its text -> ask Claude to turn it into a short
-// news-card {title, label, body} -> prepend it to assets/data/news.json.
+// Expected layout in the shared Drive folder — one subfolder per news
+// item, each containing a text file (plain .txt or a native Google Doc)
+// and optionally one image:
+//
+//   /2026-08-syysjuhlat/
+//     uutinen.txt
+//     kuva.jpg
+//
+// Flow: list subfolders -> skip ones already processed -> for each new
+// one, download its text + image -> ask Claude to turn the text into a
+// short news-card {title, label, body} -> save the image under
+// images/news/ -> prepend the card to assets/data/news.json.
 //
 // Requires (as env vars / GitHub Actions secrets):
 //   GDRIVE_API_KEY    Google Drive API key (folder must be shared as
 //                      "anyone with the link can view")
-//   GDRIVE_FOLDER_ID  the Drive folder's ID (from its URL)
+//   GDRIVE_FOLDER_ID  the parent Drive folder's ID (from its URL)
 //   ANTHROPIC_API_KEY Claude API key
 
-import { readFile, writeFile } from 'node:fs/promises';
+import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 
 const NEWS_PATH = path.join(process.cwd(), 'assets/data/news.json');
 const STATE_PATH = path.join(process.cwd(), 'assets/data/news-sync-state.json');
+const IMAGES_DIR = path.join(process.cwd(), 'images/news');
 const CLAUDE_MODEL = 'claude-sonnet-5';
 
 const { GDRIVE_API_KEY, GDRIVE_FOLDER_ID, ANTHROPIC_API_KEY } = process.env;
+
+const EXT_BY_MIME = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+  'image/gif': 'gif'
+};
 
 async function main() {
   if (!GDRIVE_API_KEY || !GDRIVE_FOLDER_ID || !ANTHROPIC_API_KEY) {
@@ -25,55 +42,108 @@ async function main() {
     return;
   }
 
-  const newest = await findNewestDriveFile();
-  if (!newest) {
-    console.log('No files found in the Drive folder — nothing to do.');
+  const folders = await listSubfolders(GDRIVE_FOLDER_ID);
+  if (folders.length === 0) {
+    console.log('No subfolders found in the Drive folder — nothing to do.');
     return;
   }
 
-  const state = await readJson(STATE_PATH, { lastProcessedFileId: null, lastProcessedModifiedTime: null, syncedAt: null });
+  const state = await readJson(STATE_PATH, { processedFolderIds: [], syncedAt: null });
+  const processed = new Set(state.processedFolderIds || []);
+  const newFolders = folders.filter((f) => !processed.has(f.id));
 
-  if (state.lastProcessedFileId === newest.id) {
-    console.log(`Newest file (${newest.name}) already processed — nothing to do.`);
+  if (newFolders.length === 0) {
+    console.log('No new folders since last sync — nothing to do.');
     return;
   }
 
-  console.log(`New file found: "${newest.name}" (${newest.id}). Downloading...`);
-  const rawText = await downloadDriveFileText(newest);
-
-  if (!rawText || !rawText.trim()) {
-    console.log('File was empty after download — marking as processed and skipping.');
-    await writeState(newest);
-    return;
-  }
-
-  console.log('Asking Claude to draft the news card...');
-  const card = await draftNewsCard(rawText);
+  console.log(`Found ${newFolders.length} new folder(s): ${newFolders.map((f) => f.name).join(', ')}`);
 
   const news = await readJson(NEWS_PATH, []);
-  news.unshift({
+
+  for (const folder of newFolders) {
+    try {
+      const item = await processFolder(folder);
+      if (item) {
+        news.unshift(item);
+        console.log(`Added news card: "${item.title}" (from "${folder.name}")`);
+      }
+    } catch (err) {
+      console.error(`Failed to process folder "${folder.name}": ${err.message}`);
+      // Skip this folder but keep going with the rest; don't mark it as
+      // processed so it gets retried on the next run.
+      continue;
+    }
+    processed.add(folder.id);
+  }
+
+  await writeFile(NEWS_PATH, JSON.stringify(news, null, 2) + '\n');
+  await writeFile(STATE_PATH, JSON.stringify({
+    processedFolderIds: [...processed],
+    syncedAt: new Date().toISOString()
+  }, null, 2) + '\n');
+}
+
+async function processFolder(folder) {
+  const files = await listFiles(folder.id);
+
+  const textFile = files.find((f) =>
+    f.mimeType === 'application/vnd.google-apps.document' || f.mimeType.startsWith('text/'));
+  const imageFile = files.find((f) => f.mimeType.startsWith('image/'));
+
+  if (!textFile) {
+    console.log(`Folder "${folder.name}" has no text file — skipping.`);
+    return null;
+  }
+
+  const rawText = await downloadDriveFileText(textFile);
+  if (!rawText || !rawText.trim()) {
+    console.log(`Folder "${folder.name}"'s text file is empty — skipping.`);
+    return null;
+  }
+
+  console.log(`Asking Claude to draft the news card for "${folder.name}"...`);
+  const card = await draftNewsCard(rawText);
+
+  let imagePath = null;
+  if (imageFile) {
+    imagePath = await downloadDriveImage(imageFile, folder.name);
+  }
+
+  return {
     title: card.title,
     label: card.label,
     body: card.body,
+    image: imagePath,
     date: new Date().toISOString().slice(0, 10)
-  });
-  await writeFile(NEWS_PATH, JSON.stringify(news, null, 2) + '\n');
-  console.log(`Added news card: "${card.title}"`);
-
-  await writeState(newest);
+  };
 }
 
-async function findNewestDriveFile() {
-  const q = encodeURIComponent(`'${GDRIVE_FOLDER_ID}' in parents and trashed = false`);
-  const fields = encodeURIComponent('files(id,name,mimeType,modifiedTime)');
-  const url = `https://www.googleapis.com/drive/v3/files?q=${q}&orderBy=modifiedTime desc&pageSize=1&fields=${fields}&key=${GDRIVE_API_KEY}`;
+async function listSubfolders(parentId) {
+  const q = encodeURIComponent(
+    `'${parentId}' in parents and mimeType = 'application/vnd.google-apps.folder' and trashed = false`);
+  const fields = encodeURIComponent('files(id,name,createdTime)');
+  const url = `https://www.googleapis.com/drive/v3/files?q=${q}&orderBy=createdTime&pageSize=50&fields=${fields}&key=${GDRIVE_API_KEY}`;
 
   const res = await fetch(url);
   if (!res.ok) {
-    throw new Error(`Drive files.list failed: ${res.status} ${await res.text()}`);
+    throw new Error(`Drive files.list (folders) failed: ${res.status} ${await res.text()}`);
   }
   const data = await res.json();
-  return data.files && data.files[0] ? data.files[0] : null;
+  return data.files || [];
+}
+
+async function listFiles(parentId) {
+  const q = encodeURIComponent(`'${parentId}' in parents and trashed = false`);
+  const fields = encodeURIComponent('files(id,name,mimeType)');
+  const url = `https://www.googleapis.com/drive/v3/files?q=${q}&pageSize=20&fields=${fields}&key=${GDRIVE_API_KEY}`;
+
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error(`Drive files.list (contents) failed: ${res.status} ${await res.text()}`);
+  }
+  const data = await res.json();
+  return data.files || [];
 }
 
 async function downloadDriveFileText(file) {
@@ -87,6 +157,31 @@ async function downloadDriveFileText(file) {
     throw new Error(`Drive file download failed: ${res.status} ${await res.text()}`);
   }
   return res.text();
+}
+
+async function downloadDriveImage(file, folderName) {
+  const url = `https://www.googleapis.com/drive/v3/files/${file.id}?alt=media&key=${GDRIVE_API_KEY}`;
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error(`Drive image download failed: ${res.status} ${await res.text()}`);
+  }
+
+  const ext = EXT_BY_MIME[file.mimeType] || path.extname(file.name).replace('.', '') || 'jpg';
+  const filename = `${slugify(folderName)}.${ext}`;
+
+  await mkdir(IMAGES_DIR, { recursive: true });
+  const buffer = Buffer.from(await res.arrayBuffer());
+  await writeFile(path.join(IMAGES_DIR, filename), buffer);
+
+  return `images/news/${filename}`;
+}
+
+function slugify(name) {
+  return name
+    .toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '') // strip accents
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '') || 'news-item';
 }
 
 async function draftNewsCard(rawText) {
@@ -147,14 +242,6 @@ async function readJson(filePath, fallback) {
     if (err.code === 'ENOENT') return fallback;
     throw err;
   }
-}
-
-async function writeState(file) {
-  await writeFile(STATE_PATH, JSON.stringify({
-    lastProcessedFileId: file.id,
-    lastProcessedModifiedTime: file.modifiedTime,
-    syncedAt: new Date().toISOString()
-  }, null, 2) + '\n');
 }
 
 main().catch((err) => {
