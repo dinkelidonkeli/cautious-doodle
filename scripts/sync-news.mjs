@@ -60,6 +60,7 @@ async function main() {
   console.log(`Found ${newFolders.length} new folder(s): ${newFolders.map((f) => f.name).join(', ')}`);
 
   const news = await readJson(NEWS_PATH, []);
+  let anySucceeded = false;
 
   for (const folder of newFolders) {
     try {
@@ -75,6 +76,12 @@ async function main() {
       continue;
     }
     processed.add(folder.id);
+    anySucceeded = true;
+  }
+
+  if (!anySucceeded) {
+    console.log('No folders were successfully processed this run — leaving state untouched.');
+    return;
   }
 
   await writeFile(NEWS_PATH, JSON.stringify(news, null, 2) + '\n');
