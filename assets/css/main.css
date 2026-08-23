@@ -1666,3 +1666,27 @@ input, select, textarea {
 	.incorrectAnswer {
 		color: #ffa726; /* Red */
 	}
+
+	/* Custom styles for number input */
+	input[type="number"] {
+		-moz-appearance: textfield; /* Re-enable spin buttons for Firefox */
+		-webkit-appearance: textfield; /* Re-enable spin buttons for Chrome/Safari */
+		appearance: textfield; /* Re-enable spin buttons for others */
+		color: #1b1f22; /* Dark text color for visibility */
+		background-color: #ffffff; /* White background */
+		padding: 0 0.5rem; /* Adjust padding to make space for arrows */
+	}
+
+	/* Hide default spin buttons for Chrome/Safari if needed, but we want them */
+	input[type="number"]::-webkit-outer-spin-button,
+	input[type="number"]::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
+
+	/* Ensure focus styles are visible */
+	input[type="number"]:focus {
+		background: #ffffff; /* Keep background white on focus */
+		border-color: #1b1f22; /* Dark border on focus */
+		box-shadow: 0 0 0 1px #1b1f22; /* Dark shadow on focus */
+	}

@@ -1,0 +1,12 @@
+[
+  {"source": "hello", "target": "hei"},
+  {"source": "world", "target": "maailma"},
+  {"source": "cat", "target": "kissa"},
+  {"source": "dog", "target": "koira"},
+  {"source": "house", "target": "talo"},
+  {"source": "book", "target": "kirja"},
+  {"source": "water", "target": "vesi"},
+  {"source": "food", "target": "ruoka"},
+  {"source": "sun", "target": "aurinko"},
+  {"source": "moon", "target": "kuu"}
+]

@@ -7,11 +7,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const submitButton = document.getElementById('submitAnswer');
   const userAnswer = document.getElementById('userAnswer');
   const feedback = document.getElementById('feedback');
-  const restartButton = document.getElementById('restartQuiz');
+  const restartQuizButton = document.getElementById('restartQuiz');
   const rewardGif = document.getElementById('rewardGif');
   const popupReward = document.getElementById('popupReward');
   const closePopup = document.getElementById('closePopup');
   const fileInput = document.getElementById('fileInput'); // File upload input
+  const imageInput = document.getElementById('imageInput'); // Image upload input
+  const wordLimitInput = document.getElementById('wordLimit'); // Word limit input
 
   // --- Data ---
   let wordPairs = []; // Array of {source, target}
@@ -48,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function loadPreloadedWords(numberOfWords = 10) {
     try {
       // Muuta fetch-kutsua, jotta se hakee tiedoston assets-hakemistosta
-      const response = await fetch('assets/data/responsquizWordse.json');
+      const response = await fetch('assets/data/preloadedWords.json');
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -82,10 +84,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputText = textarea.value.trim();
 
     if (inputText === '') {
+      console.log("DEBUG: No input in textarea. Attempting to load preloaded words.");
       loadPreloadedWords();
       return;
     }
 
+    console.log("DEBUG: Processing words from textarea input.");
     wordPairs = inputText.split('\n').map(line => {
       const parts = line.split('-').map(p => p.trim());
       return { source: parts[0], target: parts[1] };
@@ -105,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
     attempts = 0;
     document.getElementById('wordForm').style.display = 'none';
     quizSection.style.display = 'block';
-    restartButton.style.display = 'none';
+    restartQuizButton.style.display = 'none';
     popupReward.style.display = 'none';
     submitButton.style.display = 'inline-block';
     showWord();
@@ -201,28 +205,91 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       submitButton.style.display = 'none';
-      restartButton.style.display = 'inline-block';
+      restartQuizButton.style.display = 'inline-block';
     }
   }
 
   // --- Restart quiz ---
-  restartButton.addEventListener('click', (e) => {
+  restartQuizButton.addEventListener('click', (e) => {
     e.preventDefault();
-    document.getElementById('wordForm').style.display = 'block';
-    quizSection.style.display = 'none';
-    restartButton.style.display = 'none';
-    feedback.textContent = '';
-    userAnswer.value = '';
-    textarea.value = '';
-    popupReward.style.display = 'none';
-    submitButton.style.display = 'inline-block';
+    // Re-initialize quiz state
+    currentIndex = 0;
     score = 0;
     attempts = 0;
-    textarea.focus();
+    feedback.textContent = '';
+    userAnswer.value = '';
+    popupReward.style.display = 'none';
+    submitButton.style.display = 'inline-block';
+    
+    // Start the quiz again with the existing wordPairs
+    startQuiz();
   });
 
   // --- Close reward pop-up ---
   closePopup.addEventListener('click', () => {
     popupReward.style.display = 'none';
   });
+
+  // --- Translation Function ---
+  async function translateWord(word) {
+    try {
+      const response = await fetch('http://localhost:3001/translate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ text: word, targetLanguage: 'fi' }) // 'fi' for Finnish
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+      }
+
+      const data = await response.json();
+      return data.translatedText;
+
+    } catch (error) {
+      console.error('Error translating word:', error);
+      return null;
+    }
+  }
+
+  // Image OCR to word list
+  document.getElementById('imageInput').addEventListener('change', async function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const textarea = document.getElementById('wordList');
+    textarea.value = "Extracting words from image, please wait...";
+    try {
+        const { data: { text } } = await Tesseract.recognize(file, 'eng');
+        console.log("DEBUG: Tesseract raw text:", text);
+        
+        // Split text into lines, filter out empty ones, and trim
+        const englishWords = text.split(/\s+/).map(word => word.trim()).filter(word => /^[a-zA-Z]+$/.test(word));
+        console.log("DEBUG: Filtered English words (before limit):", englishWords);
+
+        const limit = parseInt(wordLimitInput.value, 10);
+        const wordsToTranslate = limit > 0 ? englishWords.slice(0, limit) : englishWords;
+        console.log("DEBUG: Words to translate (after limit):", wordsToTranslate);
+
+        if (wordsToTranslate.length === 0) {
+            textarea.value = "No recognizable words found in the image. Please try a clearer image.";
+            return;
+        }
+
+        textarea.value = "Translating words, please wait...";
+        const translatedPairs = [];
+        for (const word of wordsToTranslate) {
+            const translated = await translateWord(word);
+            if (translated) {
+                translatedPairs.push(`${word} - ${translated}`);
+            } // else: skip this word if translation failed
+        }
+        textarea.value = translatedPairs.join('\n');        console.log(`DEBUG: Successfully processed ${translatedPairs.length} word pairs from image.`);
+
+    } catch (err) {
+        textarea.value = "Sorry, could not extract text from image.";
+    }
+});
 });
