@@ -12,8 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const popupReward = document.getElementById('popupReward');
   const closePopup = document.getElementById('closePopup');
   const fileInput = document.getElementById('fileInput'); // File upload input
-  const imageInput = document.getElementById('imageInput'); // Image upload input
-  const wordLimitInput = document.getElementById('wordLimit'); // Word limit input
 
   // --- Data ---
   let wordPairs = []; // Array of {source, target}
@@ -230,66 +228,4 @@ document.addEventListener('DOMContentLoaded', () => {
     popupReward.style.display = 'none';
   });
 
-  // --- Translation Function ---
-  async function translateWord(word) {
-    try {
-      const response = await fetch('http://localhost:3001/translate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ text: word, targetLanguage: 'fi' }) // 'fi' for Finnish
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
-      }
-
-      const data = await response.json();
-      return data.translatedText;
-
-    } catch (error) {
-      console.error('Error translating word:', error);
-      return null;
-    }
-  }
-
-  // Image OCR to word list
-  document.getElementById('imageInput').addEventListener('change', async function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const textarea = document.getElementById('wordList');
-    textarea.value = "Extracting words from image, please wait...";
-    try {
-        const { data: { text } } = await Tesseract.recognize(file, 'eng');
-        console.log("DEBUG: Tesseract raw text:", text);
-        
-        // Split text into lines, filter out empty ones, and trim
-        const englishWords = text.split(/\s+/).map(word => word.trim()).filter(word => /^[a-zA-Z]+$/.test(word));
-        console.log("DEBUG: Filtered English words (before limit):", englishWords);
-
-        const limit = parseInt(wordLimitInput.value, 10);
-        const wordsToTranslate = limit > 0 ? englishWords.slice(0, limit) : englishWords;
-        console.log("DEBUG: Words to translate (after limit):", wordsToTranslate);
-
-        if (wordsToTranslate.length === 0) {
-            textarea.value = "No recognizable words found in the image. Please try a clearer image.";
-            return;
-        }
-
-        textarea.value = "Translating words, please wait...";
-        const translatedPairs = [];
-        for (const word of wordsToTranslate) {
-            const translated = await translateWord(word);
-            if (translated) {
-                translatedPairs.push(`${word} - ${translated}`);
-            } // else: skip this word if translation failed
-        }
-        textarea.value = translatedPairs.join('\n');        console.log(`DEBUG: Successfully processed ${translatedPairs.length} word pairs from image.`);
-
-    } catch (err) {
-        textarea.value = "Sorry, could not extract text from image.";
-    }
-});
 });
