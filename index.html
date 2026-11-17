@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Cautious Doodle</title>
+	<meta name="description" content="Kirjoituksia ja artikkeleita.">
+	<meta name="theme-color" content="#F5F1E8">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+	<style>
+		/* Tyyli projektista pn: "Warm Editorial Minimalism" – Plus Jakarta Sans ja hiekkasävyt */
+		:root {
+			--bg: #F5F1E8;
+			--bg2: #EBE2CC;
+			--card: #FFFDF9;
+			--text: #181818;
+			--muted: #5A554C;
+			--border: #D8D1BF;
+			--border-soft: rgba(216, 209, 191, 0.6);
+			--dark: #181818;
+			--radius-sm: 4px;
+			--radius-lg: 12px;
+			--wrap: 760px;
+			--gutter: 1.25rem;
+		}
+		@media (min-width: 768px) { :root { --gutter: 3rem; } }
+
+		*, *::before, *::after { box-sizing: border-box; }
+
+		html { -webkit-text-size-adjust: 100%; }
+
+		body {
+			margin: 0;
+			min-height: 100vh;
+			display: flex;
+			flex-direction: column;
+			background: var(--bg);
+			color: var(--text);
+			font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+			font-size: 17px;
+			line-height: 1.65;
+			-webkit-font-smoothing: antialiased;
+		}
+
+		::selection { background: var(--dark); color: var(--card); }
+		:focus-visible { outline: 2px solid var(--dark); outline-offset: 2px; }
+
+		a { color: inherit; }
+		h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; }
+		p { margin: 0; }
+
+		.wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter); width: 100%; }
+
+		.eyebrow {
+			display: block; font-size: 0.8125rem; font-weight: 600; text-transform: uppercase;
+			letter-spacing: 0.12em; color: var(--muted); margin-bottom: 0.75rem;
+		}
+
+		/* Otsikko-osio */
+		.page-hero { padding: 3.5rem 0 3rem; border-bottom: 1px solid var(--border-soft); }
+		@media (min-width: 1024px) { .page-hero { padding: 5rem 0 4rem; } }
+		.page-hero h1 { font-size: clamp(1.875rem, 4.2vw, 2.875rem); line-height: 1.15; letter-spacing: -0.03em; }
+		.lead { margin-top: 1rem; font-size: clamp(1rem, 1.6vw, 1.125rem); color: var(--muted); line-height: 1.7; max-width: 36rem; }
+
+		/* Artikkelilista */
+		main { flex: 1; padding: 3rem 0 4rem; }
+		@media (min-width: 1024px) { main { padding: 4rem 0 6rem; } }
+
+		.articles { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; }
+
+		.article-card {
+			display: flex; flex-direction: column; gap: 0.5rem;
+			background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg);
+			padding: 1.5rem 1.75rem; text-decoration: none;
+			transition: border-color .15s;
+		}
+		@media (min-width: 640px) { .article-card { padding: 1.75rem 2rem; } }
+		.article-card:hover { border-color: rgba(24, 24, 24, 0.4); }
+
+		.article-card time {
+			font-size: 0.8125rem; font-weight: 600; text-transform: uppercase;
+			letter-spacing: 0.06em; color: var(--muted);
+		}
+		.article-card h2 { font-size: 1.25rem; line-height: 1.35; letter-spacing: -0.01em; }
+		.article-card p { color: var(--muted); font-size: 1rem; }
+		.article-card .more {
+			display: inline-flex; align-items: center; gap: 0.35rem; margin-top: 0.5rem;
+			font-size: 0.875rem; font-weight: 600;
+		}
+		.article-card .more::after { content: "→"; transition: transform .15s; }
+		.article-card:hover .more::after { transform: translateX(3px); }
+
+		.empty {
+			background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-lg);
+			padding: 1.5rem 1.75rem; color: var(--muted);
+		}
+
+		/* Tumma footer kuten pn:ssä */
+		.site-footer {
+			padding: 2rem 0; background: #24211C; color: #F5F1E8;
+			font-size: 0.875rem;
+		}
+		.site-footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem 1.5rem; }
+		.site-footer span { color: #C9C1AE; }
+		.site-footer a { text-decoration: none; }
+		.site-footer a:hover { text-decoration: underline; }
+		.site-footer :focus-visible { outline-color: #F5F1E8; }
+	</style>
+</head>
+<body>
+	<header class="page-hero">
+		<div class="wrap">
+			<span class="eyebrow">Cautious Doodle</span>
+			<h1>Adventures in the tech industry</h1>
+		</div>
+	</header>
+
+	<main>
+		<div class="wrap">
+			<ul class="articles">
+				<!--
+					Uusi artikkeli: kopioi tämä lohko listan alkuun (uusin ylimmäksi).
+					<li>
+						<a class="article-card" href="articles/nimi/">
+							<time datetime="2026-11-17">17.11.2026</time>
+							<h2>Otsikko</h2>
+							<p>Lyhyt kuvaus artikkelista.</p>
+							<span class="more">Lue artikkeli</span>
+						</a>
+					</li>
+				-->
+				<li class="empty">Artikkeleita tulossa pian.</li>
+			</ul>
+		</div>
+	</main>
+
+	<footer class="site-footer">
+		<div class="wrap">
+			<span>© 2026 Cautious Doodle</span>
+		</div>
+	</footer>
+</body>
+</html>
