@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Code became cheap. What happens to systems of record like ERP?</title>
+<meta name="description" content="Three scenarios for the future of ERP and other systems of record, tested against five challenges, built on five truths about how a business works.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#ECEFF3;--surface:#F8F9FB;--ink:#151C2B;--muted:#566074;--faint:#8A93A4;--line:#CDD3DC;
+  --teal:#0B7A84;--teal-bg:#DCEFF0;--ochre:#946A00;--ochre-bg:#F1E7CC;--hl:#D7263D;
+  --sans:"Archivo","Helvetica Neue",Arial,sans-serif;--serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#10141C;--surface:#181E2A;--ink:#E7EAF0;--muted:#A0A9BA;--faint:#6D768A;--line:#2D3545;
+  --teal:#4CC4CC;--teal-bg:#122E2F;--ochre:#E2B53A;--ochre-bg:#2F2810;--hl:#FF5D70;color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#10141C;--surface:#181E2A;--ink:#E7EAF0;--muted:#A0A9BA;--faint:#6D768A;--line:#2D3545;
+  --teal:#4CC4CC;--teal-bg:#122E2F;--ochre:#E2B53A;--ochre-bg:#2F2810;--hl:#FF5D70;color-scheme:dark;}
+*,*::before,*::after{box-sizing:inherit}
+html{background:var(--bg);scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--serif);font-size:clamp(18px,1.25vw,20px);line-height:1.65;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+a{color:inherit;text-decoration-color:var(--hl);text-decoration-thickness:1.5px;text-underline-offset:3px}
+a:hover{color:var(--hl)}
+:focus-visible{outline:2px solid var(--hl);outline-offset:3px}
+/* progress */
+.progress{position:fixed;top:env(safe-area-inset-top,0px);left:0;height:3px;width:100%;background:var(--hl);transform-origin:left;transform:scaleX(0);z-index:11}
+/* hero */
+.hero{min-height:calc(100vh - env(safe-area-inset-top,0px));display:grid;grid-template-rows:auto 1fr;padding:clamp(28px,6vh,72px) clamp(20px,5vw,64px) 24px;max-width:1280px;margin:0 auto}
+.hero h1{font-family:var(--sans);font-stretch:66%;font-weight:760;font-size:clamp(46px,6.2vw,92px);line-height:.92;letter-spacing:-.015em;margin:0}
+.hero h1 span{display:block}
+.hero h1 .q{color:var(--muted);font-weight:650;max-width:22ch}
+.byline{font-family:var(--sans);font-size:15px;color:var(--muted);margin-top:28px}
+.hero-net{width:100%;height:auto;display:block;margin-top:clamp(16px,4vh,48px);align-self:end}
+/* article */
+article{max-width:680px;margin:0 auto;padding:0 clamp(20px,5vw,32px) 96px}
+article > p,article > ul,article > ol,article > blockquote{margin:0 0 1.15em}
+h2{font-family:var(--sans);font-stretch:70%;font-weight:720;font-size:clamp(36px,4.6vw,56px);line-height:1;letter-spacing:-.01em;margin:2.2em 0 .55em}
+h3{font-family:var(--sans);font-stretch:82%;font-weight:680;font-size:clamp(22px,2vw,27px);line-height:1.15;margin:1.9em 0 .55em}
+h3 .n{display:inline-grid;place-items:center;width:1.5em;height:1.5em;border-radius:50%;background:var(--ink);color:var(--bg);font-size:.72em;margin-right:.45em;vertical-align:.12em;font-stretch:100%}
+strong{font-weight:650}
+ul,ol{padding-left:1.3em}
+li{margin:.35em 0}
+li::marker{color:var(--faint)}
+blockquote{margin:1.8em 0;padding:4px 0 4px 26px;border-left:4px solid var(--hl);font-family:var(--sans);font-stretch:85%;font-size:clamp(23px,2.2vw,29px);line-height:1.25;font-weight:560}
+.caveat{font-style:italic;color:var(--muted)}
+.ending{font-style:italic}
+/* figures */
+figure{margin:2.4em 0}
+figure.wide{width:min(1040px,calc(100vw - 32px));margin-left:50%;transform:translateX(-50%)}
+figcaption{font-family:var(--sans);font-size:14px;color:var(--muted);margin-top:10px;max-width:680px;margin-left:auto;margin-right:auto}
+.fig-scroll{overflow-x:auto}
+svg text{font-family:var(--sans)}
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin:1.8em 0 2em;padding:20px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-family:var(--sans)}
+.stats div{display:grid;gap:4px}
+.stats b{font-stretch:68%;font-size:clamp(40px,5vw,56px);line-height:1;font-weight:760;font-variant-numeric:tabular-nums}
+.stats span{font-size:14px;color:var(--muted);line-height:1.35}
+/* truths */
+.truths{list-style:none;padding:0;margin:1.6em 0;position:relative;counter-reset:t}
+.truths::before{content:"";position:absolute;left:17px;top:18px;bottom:18px;width:3px;background:var(--ink)}
+.truths li{position:relative;padding-left:58px;margin:0 0 1.2em;counter-increment:t}
+.truths li::before{content:counter(t);position:absolute;left:0;top:0;width:37px;height:37px;border-radius:50%;background:var(--bg);border:3px solid var(--ink);display:grid;place-items:center;font-family:var(--sans);font-weight:700;font-size:15px}
+.truths li:last-child::before{background:var(--hl);border-color:var(--hl);color:#fff}
+/* scenarios */
+.scen{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:1.6em 0 2em}
+.scen > div{background:var(--surface);padding:20px 20px 22px;border-top:4px solid var(--teal);font-size:16.5px;line-height:1.55}
+.scen > div:nth-child(1){border-top-color:var(--ochre)}
+.scen > div:nth-child(3){border-top-color:var(--hl)}
+.scen h4{font-family:var(--sans);font-stretch:82%;font-size:21px;line-height:1.15;margin:0 0 10px}
+.scen h4 small{display:block;font-size:14px;font-stretch:100%;font-weight:500;color:var(--muted);margin-bottom:4px}
+/* path diagram */
+.path{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(14px,3vw,40px);font-family:var(--sans);position:relative}
+.stage h4{font-stretch:80%;font-size:clamp(20px,2vw,24px);margin:0;line-height:1.1}
+.stage .sub{font-size:14px;color:var(--muted);margin:2px 0 14px}
+.stack{display:flex;flex-direction:column;gap:8px;height:clamp(340px,40vw,400px)}
+.blk{border-radius:8px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:8px 10px;font-size:15px;font-weight:600;line-height:1.2;overflow:hidden;transition:flex-grow 1.1s cubic-bezier(.2,.8,.2,1),opacity .6s}
+.blk small{font-weight:400;font-size:13px;color:var(--muted);margin-top:3px}
+.blk.ppl{border:1px solid var(--line);background:transparent;font-weight:500}
+.blk.old{background:var(--ochre-bg);border:1px solid color-mix(in srgb,var(--ochre) 45%,transparent)}
+.blk.new{background:var(--teal-bg);border:2px solid var(--teal)}
+.mods{display:flex;gap:6px;margin-top:8px}
+.mods i{font-style:normal;font-size:12.5px;font-weight:500;border:1.5px solid var(--teal);border-radius:6px;padding:3px 8px}
+/* start state, animated to the data-g values when the figure is in view */
+.path .blk{flex-grow:1}
+.path.on .blk{flex-grow:var(--g)}
+.path .blk.new{opacity:.25}
+.path.on .blk.new{opacity:1}
+.path.on .stage:nth-child(2) .blk{transition-delay:.5s}
+.path.on .stage:nth-child(3) .blk{transition-delay:1s}
+.legend{display:flex;gap:22px;flex-wrap:wrap;font-family:var(--sans);font-size:14px;color:var(--muted);margin-top:16px}
+.legend span{display:inline-flex;gap:8px;align-items:center}
+.legend i{display:inline-block;width:16px;height:11px;border-radius:2px}
+/* tests */
+.tests{list-style:none;padding:0;margin:1.4em 0;display:grid;gap:14px}
+.tests li{background:var(--surface);padding:16px 20px 18px;border-left:4px solid var(--hl);margin:0}
+footer{max-width:680px;margin:0 auto;padding:28px clamp(20px,5vw,32px) 64px;border-top:1px solid var(--line);font-family:var(--sans);font-size:14px;color:var(--muted)}
+/* svg animation states */
+.net .lk{opacity:0;transition:opacity .6s}
+.net .nd{opacity:0;transform-box:fill-box;transform-origin:center;transform:scale(.3);transition:opacity .5s,transform .5s cubic-bezier(.3,1.6,.5,1)}
+.net .lb{opacity:0;transition:opacity .6s}
+.net .route{stroke-dasharray:var(--len);stroke-dashoffset:var(--len)}
+.net.on .lk,.net.on .lb{opacity:1}
+.net.on .nd{opacity:1;transform:none}
+.net.on .route{transition:stroke-dashoffset 3s cubic-bezier(.45,0,.25,1);stroke-dashoffset:0}
+@media (max-width:760px){
+  .scen,.stats{grid-template-columns:minmax(0,1fr)}
+  .path{grid-template-columns:minmax(0,1fr)}
+  .stack{height:300px}
+  .hero{min-height:auto}
+}
+@media (prefers-reduced-motion: reduce){
+  *{transition:none!important;animation:none!important}
+  html{scroll-behavior:auto}
+  .net .lk,.net .nd,.net .lb{opacity:1;transform:none}
+  .net .route{stroke-dashoffset:0}
+  .path .blk{flex-grow:var(--g)}.path .blk.new{opacity:1}
+  .progress{display:none}
+}
+</style>
+</head>
+<body>
+<div class="progress" id="progress" aria-hidden="true"></div>
+
+<header class="hero">
+  <div>
+    <h1><span>Code became cheap.</span><span class="q">What happens to systems of record like ERP?</span></h1>
+    <p class="byline">Jussi, 13 November 2026</p>
+  </div>
+  <svg class="hero-net net" id="heroNet" viewBox="0 0 1200 420" preserveAspectRatio="xMidYMid meet" role="img" aria-label="A network of hundreds of connected applications, with one business process drawn across it"></svg>
+</header>
+
+<article>
+<h2>Why ask this now</h2>
+<p>For thirty years, enterprise software rested on one assumption: code is expensive to write and maintain, so you buy it as a product or as SaaS and adapt your business to it. That assumption is breaking. AI can now write, test and change code at a fraction of the old cost.</p>
+<p>I look at this from the inside. I’ve worked in some of Finland’s biggest companies, with application portfolios ranging from more than 800 applications to several thousand. I’ve been responsible for tens of business applications and for shared services such as integration and data platforms, worked on master data projects, and managed large software licence portfolios. I’ve also survived several licence audits, and I still have the scars on my back.</p>
+<p>This article asks what that means for systems of record, ERP above all. It builds on five truths about how a business works, sketches three scenarios for the future, and tests them against the strongest counter-arguments I could find.</p>
+<p>My conclusion: the scenarios aren’t alternatives but stages of one path. And every step on that path has to pass two tests.</p>
+
+<h2>The house of cards</h2>
+<p>A company with more than €1 billion in revenue typically runs 500 to 1,000 applications. Several ERPs are often among them, inherited through acquisitions or built up country by country.</p>
+<p>That isn’t an exaggeration. In <a href="https://www.salesforce.com/news/stories/connectivity-report-2023/">MuleSoft’s 2023 Connectivity Benchmark</a>, a survey of 1,050 IT leaders in enterprises with at least 1,000 employees, organizations used 1,061 applications on average. Only 29% of them were integrated.</p>
+<div class="stats" id="stats">
+  <div><b data-count="1061">1,061</b><span>applications in the average enterprise</span></div>
+  <div><b data-count="29" data-suffix="%">29%</b><span>of them integrated</span></div>
+  <div><b data-count="40" data-suffix="%">40%</b><span>of IT teams’ time spent on custom integrations</span></div>
+</div>
+<p>My own experience matches, and then some. In the large Finnish companies I’ve worked in, the portfolios ranged from more than 800 applications to several thousand.</p>
+<p>I’ve also seen how such portfolios grow. At a company with a huge R&amp;D budget like Nokia, many business applications started as an Excel sheet, became an Access database and then a small Java application with its own database. Once one reached 50 to 100 users, IT was typically asked: “Could you manage this for us, please?”</p>
+<p>The same movement is happening again with AI-coded applications, only faster. Without a shared data model and a plan, AI coding could simply add more cards to the house.</p>
+<p>Look inside such a portfolio and a pattern repeats:</p>
+<ul>
+  <li>Most of it is legacy, kept alive because something depends on it.</li>
+  <li>Parts of it are at or near end of life, waiting for a replacement project that keeps slipping.</li>
+  <li>Everything is tied together by integrations built over decades, in whatever technology was current at the time.</li>
+</ul>
+<p>Those integrations are not plumbing. They quietly run the actual business processes behind the scenes. An order travels from a webshop to a CRM, to one of three ERPs, to a warehouse system and back, and the process lives in the connections between them.</p>
+<blockquote>A typical business process, from customer order to delivery, can have tens if not hundreds of touch points along its integrated journey, across several systems of record. Every one of them is a place where the process can break, and where the truth can split.</blockquote>
+<figure class="wide">
+  <div class="fig-scroll"><svg class="net" id="houseNet" viewBox="0 0 760 564" style="min-width:640px;width:100%;height:auto;display:block" role="img" aria-label="One order crosses dozens of systems, from webshop to factory floor"></svg></div>
+  <figcaption>One order crosses dozens of systems, from webshop to factory floor. Grey lines are integrations, the red line is the order’s journey and the dashed line the materials it triggers.</figcaption>
+</figure>
+<p>Did you know that some of them are still FTP batch file transfers, not the light, asynchronous API calls you might imagine? Some are even triggered manually.</p>
+<p>It works, but it’s a house of cards. Every upgrade, law change or new system risks bringing part of it down, so every change becomes a project. And IT organizations typically scope a change to one system or application first, and only later realize what it affects in the integrations around it. In MuleSoft’s survey, IT teams spent about 40% of their time designing, building and testing custom integrations. And the licence and subscription fees are paid for the whole show.</p>
+
+<h2>The worst possible timing</h2>
+<p>We’re in the middle of an ERP renewal wave. On-premise systems move to the cloud, and SAP customers move from ECC to S/4HANA or public cloud. For SAP, <a href="https://sapinsider.org/blogs/what-erp-support-deadlines-actually-mean-for-companies/">mainstream maintenance of ECC ends in 2027</a>, with paid extended maintenance through 2030.</p>
+<p>Many of these decisions were made before AI coding reached its current level, which happened only about a year ago. Contracts signed now often run five to ten years. So the most expensive IT decision of the decade is being made on assumptions that are shifting underneath it.</p>
+<p>IT leaders are often blamed for being stuck in “this is how it’s always been done”. There’s some truth in that: many have only just finished moving to the cloud, and now they’re told code is nearly free. But their caution is also rational. An ERP failure can stop a company, and the CIO carries that risk personally. Many of them also remember service-oriented architecture, early cloud and blockchain being sold as revolutions.</p>
+<p>So the way forward isn’t to argue with that caution. It’s to change the risk: small, reversible steps proven one process area at a time.</p>
+
+<h2>Five truths about how a business works</h2>
+<p>To think about systems of record, I start from how a business works rather than from software. I’ve written this up as <a href="../process-chart/">five truths, with an interactive map of business processes</a> built from APQC’s Process Classification Framework and Microsoft’s Business Process Catalog. In short:</p>
+<ol class="truths">
+  <li><strong>Every business can be described as a network of connected processes.</strong> Processes describe how the business works. The business itself consists of people, assets, information, legal entities and culture.</li>
+  <li><strong>Processes fall into three layers.</strong> Management processes steer the business, core processes create and deliver value to customers, and support processes enable both.</li>
+  <li><strong>Processes are carried out by people and applications, including connected machines and AI.</strong> Every step reads, creates or changes data.</li>
+  <li><strong>Data should be the truth about the company’s situation.</strong> In practice, it’s only as accurate as the processes, people and applications that create it.</li>
+  <li><strong>If processes change data, and the data should reflect reality, then a data change that needs no judgment and no information beyond what’s already digital doesn’t need a person.</strong> Unless law, policy or accountability requires one, people handle only the exceptions.</li>
+</ol>
+<p>Seen this way, an application portfolio is “only” processes and data, packaged in a particular and very complex way. The question is whether that packaging still makes sense when code is cheap.</p>
+
+<h2>Three scenarios for systems of record</h2>
+<div class="scen">
+  <div><h4><small>Scenario 1</small>The AI-infused backbone</h4>Systems of record continue to form the backbone of the enterprise. Vendors build AI into them, and an agent layer on top fills the gaps the ERP doesn’t cover, especially between systems.</div>
+  <div><h4><small>Scenario 2</small>Modular, AI-coded processes</h4>Companies rethink their processes and start coding parts of them, with AI, as modular process areas. This is what service-oriented architecture and microservices tried to do, back when code was too expensive to make it pay.</div>
+  <div><h4><small>Scenario 3</small>The central business AI</h4>Companies realize that ERP, and the whole application portfolio, is “only” a collection of processes and data. A central business AI operates the processes and asks people only when a decision is needed, or when information isn’t available digitally.</div>
+</div>
+<h3>Early signs</h3>
+<p>None of this is purely hypothetical.</p>
+<p>For scenario 3, Palantir already works in this direction. Its <a href="https://palantir.com/docs/foundry/architecture-center/ontology-system/">Ontology</a> models a company’s objects, decisions and actions across ERPs, CRMs, sensors and documents, and writes actions back to operational systems. It positions itself as a decision layer above the systems of record rather than a replacement for them.</p>
+<p>For scenario 2, a recent example is Anthropic’s <a href="https://claude.com/resources/articles/claude-for-manufacturing">Claude for Manufacturing</a>, launched in November 2026. It packages manufacturing work as 17 skills: quoting a new job, investigating a failed inspection, diagnosing a breakdown, sourcing from another supplier, reporting on production. Each skill carries a process through several steps until a person reviews it, and companies can build on the skills to fit their own operations. Connectors reach the systems of record, such as Infor, Oracle NetSuite, Autodesk Fusion and Microsoft 365, and with Infor’s own plugin an approved change can be written back, for example releasing a purchase order to another supplier and rescheduling production.</p>
+<p>Strictly, it sits between scenarios 1 and 2. The ERP stays central and holds the data. But the process logic, the part that defines how a quote or a corrective action gets done, now lives in a modular skill outside the ERP, organized by process area and adaptable by each company. That’s the move scenario 2 describes. It also illustrates the fifth truth: the system carries the work to the point where judgment is needed, and a person approves.</p>
+
+<h2>Testing the scenarios</h2>
+<p>I put the scenarios through five challenges. Each one changed my view.</p>
+
+<h3><span class="n">1</span>Doesn’t mixing scenarios make the house of cards taller?</h3>
+<p>The tempting answer is that companies will use all three: scenario 1 for support processes, 2 for core, 3 for management decisions. But added on top of what exists, that’s today’s card house with an AI roof. More layers, more integrations, more licences.</p>
+<p>History agrees. ERP was supposed to replace hundreds of systems; integration buses, integration platforms and data lakes each arrived to fix the gaps. Each solved a real problem, and few let anything be switched off. So the burden of proof sits with every new layer: what does it let you retire? An overlay is only progress if it becomes the single integration point, and systems are retired behind it one by one.</p>
+<p>Having been responsible for shared integration and data platforms, that’s the first question I’d ask of any new layer, including an AI one.</p>
+<p>My own experience says the same. New applications are fairly easy to buy, but how many of you have been involved in ramping one down? Retiring an application means untangling its data, its integrations and the processes that quietly depend on it, and that work rarely has a budget or an owner.</p>
+
+<h3><span class="n">2</span>Who signs the accounts, and is ERP data more true?</h3>
+<p>Management signs the financial statements, and the auditor gives an opinion. The ERP signs nothing. Data isn’t truer for sitting in tens of thousands of ERP tables.</p>
+<p>What auditors rely on is controls: who can do what, how entries are made and approved, that posted entries can’t be silently changed, and how the system itself is changed. ERPs bring these pre-built and familiar to auditors, which makes audits cheaper. That’s convenience and trust, not truth. Legislation is largely technology-neutral: Finland’s Accounting Act requires a traceable path from business event to financial statements, not an ERP.</p>
+<p>The real question is the system where an entry is first created. If that becomes an AI, it must show repeatability, explain why it posted what it did, and put model updates under the same change control as code. A common design: the AI decides, deterministic rules post, and the reasoning is logged next to the entry.</p>
+
+<h3><span class="n">3</span>Why is the same customer described differently in every system?</h3>
+<p>Mostly because those systems were built as separate products by separate vendors. Universal data models exist, but changing the core of a decades-old monolith was too expensive. Tellingly, the standards that did succeed sit between companies, where exchange forces agreement: GS1 for products, ISO 20022 for payments, Peppol for e-invoicing.</p>
+<p>Integration standards have existed for decades, too. But many are tied to a market area or an industry, and decades of iteration have made them complex. Who still knows EDI and its dialects: ANSI X12 in North America, UN/EDIFACT internationally, EANCOM in retail, ODETTE and VDA in European automotive? Add RosettaNet in electronics, HL7 in healthcare, SWIFT messages in banking and Finvoice in Finnish e-invoicing. Even agreed standards split by region and industry, and every partner implements them a little differently.</p>
+<p>Some difference is real. Sales sees an account, finance a legal entity with a credit limit, logistics delivery addresses. A shared model handles that with a common core and extensions per function, but someone must still decide what “the customer” means. With cheap code, the bottleneck moves to agreeing on meaning and cleaning up decades of data. In scenarios 2 and 3, the company’s own data model may become its most valuable digital asset.</p>
+<p>Master data projects taught me where the real cost sits. The tooling is rarely the hard part. Agreeing on definitions, and on who owns them, is.</p>
+
+<h3><span class="n">4</span>Where do the rules come from?</h3>
+<p>From legislation, standards, tax authorities and company policy. ERP vendors don’t author rules; they translate them into code. When rules are buried in heavily customized ERP code, every law change becomes a costly project.</p>
+<p>The direction is already visible. Tax calculation and e-invoicing compliance have largely moved into specialist services, and authorities increasingly require structured digital reporting, like Finland’s Incomes Register for payroll. The principle: keep rules as versioned data, separate from process code, with effective dates. Then a law change becomes an interpretation decision, a rule update and an automated test run. Interpreting the law still needs accountable people; implementing the agreed interpretation doesn’t.</p>
+
+<h3><span class="n">5</span>How will vendors justify their fees?</h3>
+<p>The market is already asking. By early July 2026, <a href="https://www.xtb.com/en/market-analysis/stock-of-the-week-adobe-is-ai-taking-its-future-away">Adobe’s stock had fallen nearly 40% for the year</a> while its recurring revenue still grew, because investors doubt its pricing power will last. <a href="https://www.trefis.com/articles/605475/the-ai-agent-shake-up-which-software-stocks-survive/2026-07-09">SAP was down 33% year to date</a> as agentic AI puts pressure on per-seat pricing.</p>
+<p>Other SaaS leaders tell the same story. <a href="https://www.trefis.com/stock/now/articles-v3/605475/the-ai-agent-shake-up-which-software-stocks-survive/2026-07-09">ServiceNow was down about 33% year to date by July</a>, and <a href="https://wtop.com/news/2026/02/software-stocks-wilted-after-claude-coworks-debut-but-these-3-stocks-may-thrive">Salesforce was already down 28% for the year in February</a>.</p>
+<p>The moves can be abrupt, and they often follow announcements from leading AI companies rather than the vendors’ own results. When Anthropic released plugins for its Claude Cowork agent in early February 2026, <a href="https://moneylife.in/article/nifty-it-plunges-587-percentage-as-anthropics-ai-triggers-brutal-selloff/79573.html">a basket of US software stocks fell 6% in a day, wiping out about $285 billion of market value, with Salesforce, ServiceNow, Adobe and Workday down 6 to 8%</a>. Three weeks later, Anthropic announced integrations with some of the same companies, including Salesforce, and <a href="https://www.deeplearning.ai/the-batch/claude-cowork-plugins-trigger-a-saas-stock-selloff-but-partnerships-lead-to-slight-rebound">the shares partly recovered</a>. A single product launch can move a sector’s value by hundreds of billions in days.</p>
+<p>ERP switching costs are far higher than Adobe’s, so erosion will be slower. But fees will have to be justified by owning the data, certified controls and maintained rules, not by seats. Expect outcome pricing, such as a fee per processed invoice, which competes directly with automation built around the ERP.</p>
+<p>Anyone who has managed a large licence portfolio knows vendors defend their revenue hard. After several licence audits, I’d expect licence terms and pricing models to change long before total fees fall. That makes contract terms signed during this renewal wave even more important.</p>
+
+<h2>Not alternatives, but a path</h2>
+<p class="caveat">A caveat first: nobody can predict the future, and I’m no exception. Technology, regulation and markets have surprised everyone before, and they will again. Read what follows as a way to think about the choices ahead, not as a forecast.</p>
+<p>After these challenges, I no longer see three alternative futures. I see three stages of one path, each with conditions that decide whether it reduces complexity or adds to it.</p>
+<figure class="wide">
+  <div class="path" id="path" role="img" aria-label="The ERP shrinks to a ledger core as the path advances from scenario 1 to scenario 3">
+    <div class="stage"><h4>Now: scenario 1</h4><p class="sub">Renewal, clean core</p><div class="stack">
+      <div class="blk ppl" style="--g:1.1">Many user touchpoints</div>
+      <div class="blk new" style="--g:1.2">Agent overlay<small>Fills gaps between systems</small></div>
+      <div class="blk old" style="--g:3.6">ERP and legacy estate<small>500 to 1,000 applications</small><small>Several ERPs, fragile links</small></div>
+    </div></div>
+    <div class="stage"><h4>Next: scenario 2</h4><p class="sub">Modules replace systems</p><div class="stack">
+      <div class="blk ppl" style="--g:.9">Decisions per module</div>
+      <div class="blk new" style="--g:2.3">AI-coded core modules<div class="mods"><i>Sell</i><i>Make</i><i>Deliver</i></div></div>
+      <div class="blk old" style="--g:1.4">ERP for support<small>Standard, clean core</small></div>
+      <div class="blk new" style="--g:1">Shared data model</div>
+    </div></div>
+    <div class="stage"><h4>Later: scenario 3</h4><p class="sub">ERP shrinks to a ledger</p><div class="stack">
+      <div class="blk ppl" style="--g:.8">Exceptions only</div>
+      <div class="blk new" style="--g:2.8">Central business AI<small>Runs the process model</small><small>Decides within its mandate</small></div>
+      <div class="blk old" style="--g:.8">Ledger core</div>
+      <div class="blk new" style="--g:1">Business ontology</div>
+    </div></div>
+  </div>
+  <div class="legend"><span><i style="background:var(--ochre-bg);border:1px solid var(--ochre)"></i>Packaged ERP and legacy</span><span><i style="background:var(--teal-bg);border:2px solid var(--teal)"></i>AI and shared data model</span><span><i style="border:1px solid var(--line)"></i>People</span></div>
+  <figcaption>The ERP shrinks to a ledger core as the path advances. Each move must pass the people test and the complexity test.</figcaption>
+</figure>
+<p><strong>Now: scenario 1.</strong> The renewal wave locks most companies here for years, so use it well. Keep the core clean, keep custom logic and data portable, and add agents where the work needs no judgment.</p>
+<p><strong>Next: scenario 2 for core processes.</strong> Where differentiation pays for custom work, rebuild process areas as AI-coded modules on one shared data model, with rules kept as versioned data. The ERP shrinks to standard support processes.</p>
+<p><strong>Later: scenario 3.</strong> A central business AI runs the process model on the company’s own business ontology. What remains of the ERP is a thin ledger core, where the truth is recorded under provable controls.</p>
+<p>Scenario 3 will often arrive early, as an overlay on scenario 1. That’s only legitimate as a transition path, with a plan from day one to retire what it replaces. Otherwise it becomes one more layer nobody can remove.</p>
+
+<h2>Two tests for every step</h2>
+<p>A step along this path is only progress if it passes two tests:</p>
+<ol class="tests">
+  <li><strong>The people test.</strong> Does it remove work that no longer needs a person, because no judgment is needed and the information is already digital?</li>
+  <li><strong>The complexity test.</strong> Does it reduce the number of systems, and the number of places where the truth lives?</li>
+</ol>
+<p>Passing only the first is the trap most companies will be tempted by: agents on top of an unchanged estate. Fewer people, more systems, and an even taller house of cards.</p>
+<p>Passing only the second is a classic consolidation project: fewer systems, same amount of manual work. The value lies in passing both.</p>
+
+<h2>Where are you on the path?</h2>
+<p>The renewal wave decides where many companies will stand for the next decade. Keeping the core clean, keeping data portable and avoiding contracts that outlive your confidence costs little now, and keeps the later stages open.</p>
+<p>Here’s a thought experiment worth trying in your next steering group: if you started a new business today, with no legacy at all, which path would you choose? Would you buy an ERP and build agents around it? Or would you start with your own data model, a ledger and AI-coded processes from day one, and buy only the commodity parts, such as payroll and tax calculation?</p>
+<p>For a new company, scenarios 2 and 3 may not be the end state at all, but the cheaper place to start. Some are already there: Palantir’s CTO has pointed out that <a href="https://constellationr.com/node/36239">SpaceX and Tesla built their own ERP systems</a>, and Palantir targets next-generation manufacturers rather than companies already committed to legacy systems. That’s the real benchmark for incumbents. Every year spent on the old path, a newcomer can start where the incumbent hopes to arrive.</p>
+<p>I’d like to hear from people who run these portfolios. Where is your organization on this path, and which test does your next big IT investment pass?</p>
+<p class="ending">One last thing to keep in mind: we haven’t yet seen how cheap code will actually remain.</p>
+</article>
+
+<footer>
+  <p>The five truths and an interactive map of business processes: <a href="../process-chart/">What is a business? A process view</a></p>
+</footer>
+
+<script>
+(function(){
+const NS="http://www.w3.org/2000/svg";
+const reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
+function txt(parent,x,y,s,o={}){const t=el("text",Object.assign({x,y,"font-size":o.size||12,fill:o.fill||"var(--ink)","text-anchor":o.anchor||"middle","font-weight":o.weight||500,class:"lb",style:"paint-order:stroke;stroke:var(--bg);stroke-width:5px;stroke-linejoin:round"},o.attrs||{}),parent);t.textContent=s;return t}
+function routeLen(p){p.style.setProperty("--len",Math.ceil(p.getTotalLength()))}
+
+/* ---------- hero: an abstract portfolio ---------- */
+(function(){
+ const svg=document.getElementById("heroNet");
+ let seed=7;const rnd=()=>{seed=(seed*16807)%2147483647;return (seed-1)/2147483646};
+ const pts=[];const cols=24,rows=8;
+ for(let c=0;c<cols;c++)for(let r=0;r<rows;r++){if(rnd()<.8)pts.push([40+c*(1120/(cols-1))+(rnd()-.5)*40,30+r*(360/(rows-1))+(rnd()-.5)*34])}
+ const gl=el("g",{},svg),gn=el("g",{},svg);
+ pts.forEach((p,i)=>{const d=pts.map((q,j)=>[j,(q[0]-p[0])**2+(q[1]-p[1])**2]).filter(x=>x[0]!==i).sort((a,b)=>a[1]-b[1]).slice(0,3);
+   d.forEach(([j])=>{if(j>i)el("line",{x1:p[0],y1:p[1],x2:pts[j][0],y2:pts[j][1],stroke:"var(--line)","stroke-width":1.2,class:"lk",style:`transition-delay:${(p[0]/1200*1.2).toFixed(2)}s`},gl)})});
+ pts.forEach(p=>{const big=rnd()<.08;el("circle",{cx:p[0],cy:p[1],r:big?8:4,fill:big?"var(--ochre-bg)":"var(--faint)",stroke:big?"var(--ochre)":"none","stroke-width":1.5,"fill-opacity":big?1:.6,class:"nd",style:`transition-delay:${(p[0]/1200*1.2).toFixed(2)}s`},gn)});
+ // route: pick a point per column band, wandering up and down
+ const route=[];for(let c=0;c<cols;c+=2){const band=pts.filter(p=>Math.abs(p[0]-(40+c*(1120/(cols-1))))<30);if(band.length)route.push(band[Math.floor(rnd()*band.length)])}
+ const path=el("polyline",{points:route.map(p=>p.join(",")).join(" "),fill:"none",stroke:"var(--hl)","stroke-width":3,"stroke-linejoin":"round","stroke-linecap":"round",class:"route",style:"transition-delay:1.4s"},svg);
+ routeLen(path);
+ route.forEach((p,i)=>el("circle",{cx:p[0],cy:p[1],r:5,fill:"var(--hl)",class:"nd",style:`transition-delay:${(1.5+i*0.24).toFixed(2)}s`},svg));
+ requestAnimationFrame(()=>requestAnimationFrame(()=>svg.classList.add("on")));
+})();
+
+/* ---------- house of cards ---------- */
+(function(){
+ const svg=document.getElementById("houseNet");
+ const P={customer:[80,110],web:[210,110],crm:[330,100],ipaas:[380,230],erpA:[250,230],erpB:[500,140],erpC:[520,300],plm:[460,200],wms:[220,340],mes:[540,430],mach:[430,440],qms:[310,430],carrier:[90,360],supplier:[680,120],bank:[690,250],tax:[680,380],sub:[690,470]};
+ const din=[[190,180],[230,295],[270,165],[350,160],[410,120],[430,215],[455,280],[400,330],[350,350],[470,350],[560,250],[570,180],[545,95],[460,85],[180,250],[320,180],[590,330],[300,300],[260,360]];
+ const plc=[[370,460],[480,466],[500,420],[350,415],[390,472]];
+ const dout=[[60,200],[115,250],[60,440],[40,300],[700,70],[730,180],[640,310],[730,320],[650,430],[120,60],[640,60],[730,420]];
+ const links=[[210,110,330,100],[210,110,250,230],[330,100,380,230],[330,100,350,160],[350,160,410,120],[410,120,500,140],[500,140,460,85],[500,140,545,95],[500,140,570,180],[570,180,560,250],[500,140,460,200],[460,200,520,300],[460,200,430,215],[460,200,570,180],[380,230,500,140],[380,230,520,300],[380,230,430,215],[380,230,455,280],[380,230,320,180],[320,180,270,165],[270,165,190,180],[190,180,180,250],[180,250,250,230],[250,230,230,295],[230,295,300,300],[300,300,380,230],[220,340,260,360],[520,300,470,350],[520,300,560,250],[520,300,590,330],[455,280,400,330],[400,330,350,350],[350,350,310,430],[540,430,500,420],[500,420,430,440],[430,440,480,466],[430,440,390,472],[430,440,370,460],[350,415,310,430],[540,430,310,430],[520,300,680,380],[500,140,680,120],[500,140,690,250],[560,250,690,250],[80,110,210,110],[220,340,90,360],[180,250,115,250],[115,250,60,200],[40,300,90,360],[680,120,700,70],[680,120,730,180],[690,250,730,180],[690,250,640,310],[640,310,730,320],[680,380,730,420],[680,380,650,430],[540,430,690,470],[570,180,640,60],[210,110,120,60],[260,360,60,440]];
+ const route=[[80,110],[210,110],[330,100],[350,160],[410,120],[500,140],[380,230],[520,300],[540,430],[430,440],[310,430],[220,340],[90,360]];
+ const mats=[[520,300],[570,180],[672,124]];
+ const defs=el("defs",{},svg);const mk=el("marker",{id:"arr",viewBox:"0 0 10 10",refX:9,refY:5,markerWidth:6,markerHeight:6,orient:"auto-start-reverse"},defs);el("path",{d:"M0 0L10 5L0 10z",fill:"var(--hl)"},mk);
+ el("rect",{x:150,y:70,width:460,height:430,rx:16,fill:"none",stroke:"var(--faint)","stroke-width":1.25,"stroke-dasharray":"6 5",class:"lk"},svg);
+ txt(svg,152,60,"Your company: hundreds of applications",{anchor:"start",fill:"var(--muted)"});
+ el("rect",{x:170,y:385,width:420,height:103,rx:10,fill:"var(--surface)",stroke:"var(--faint)","stroke-width":1,"stroke-dasharray":"3 4",class:"lk"},svg);
+ txt(svg,182,402,"Factory floor",{anchor:"start",fill:"var(--muted)",weight:650});
+ const gl=el("g",{},svg);links.forEach(l=>el("line",{x1:l[0],y1:l[1],x2:l[2],y2:l[3],stroke:"var(--line)","stroke-width":1.3,class:"lk",style:`transition-delay:${(l[0]/760*.8).toFixed(2)}s`},gl));
+ const gn=el("g",{},svg);
+ din.forEach(d=>el("circle",{cx:d[0],cy:d[1],r:5,fill:"var(--faint)","fill-opacity":.6,class:"nd",style:`transition-delay:${(d[0]/760*.8).toFixed(2)}s`},gn));
+ plc.forEach(d=>el("rect",{x:d[0]-4,y:d[1]-4,width:8,height:8,rx:1,fill:"var(--faint)","fill-opacity":.6,class:"nd",style:"transition-delay:.7s"},gn));
+ dout.forEach(d=>el("circle",{cx:d[0],cy:d[1],r:5,fill:"none",stroke:"var(--faint)",class:"nd",style:`transition-delay:${(d[0]/760*.8).toFixed(2)}s`},gn));
+ const mp=el("polyline",{points:mats.map(p=>p.join(",")).join(" "),fill:"none",stroke:"var(--hl)","stroke-width":2,"stroke-dasharray":"6 4","marker-end":"url(#arr)",class:"lb",style:"transition-delay:4.2s"},svg);
+ txt(svg,628,168,"Materials",{anchor:"start",fill:"var(--hl)",attrs:{style:"transition-delay:4.2s;paint-order:stroke;stroke:var(--bg);stroke-width:5px"}});
+ const rp=el("polyline",{points:route.map(p=>p.join(",")).join(" "),fill:"none",stroke:"var(--hl)","stroke-width":2.8,"stroke-linejoin":"round","marker-end":"url(#arr)",class:"route",style:"transition-delay:1s"},svg);routeLen(rp);
+ txt(svg,145,130,"Order to delivery",{fill:"var(--hl)",weight:650});
+ const sys=(k,r)=>el("circle",{cx:P[k][0],cy:P[k][1],r,fill:"var(--ochre-bg)",stroke:"var(--ochre)","stroke-width":1.4,class:"nd",style:`transition-delay:${(P[k][0]/760*.8+.2).toFixed(2)}s`},svg);
+ const ext=k=>el("circle",{cx:P[k][0],cy:P[k][1],r:8,fill:"var(--bg)",stroke:"var(--muted)","stroke-width":1.3,class:"nd",style:`transition-delay:${(P[k][0]/760*.8).toFixed(2)}s`},svg);
+ [["web",9],["crm",9],["wms",9],["plm",9],["ipaas",11],["erpA",12],["erpB",12],["erpC",12],["mes",10],["mach",9],["qms",9]].forEach(([k,r])=>sys(k,r));
+ ["customer","carrier","supplier","bank","tax","sub"].forEach(ext);
+ const L=[[210,94,"Webshop"],[330,84,"CRM"],[500,118,"ERP B",{weight:700}],[474,206,"PLM",{anchor:"start"}],[366,236,"Integration hub",{anchor:"end"}],[228,268,"ERP A",{anchor:"end",weight:700}],[538,304,"ERP C",{anchor:"start",weight:700}],[220,322,"Warehouse"],[540,458,"MES"],[430,466,"Machines"],[310,456,"Quality system"],[80,92,"Customer"],[90,386,"Carrier"],[680,102,"Supplier"],[690,232,"Bank"],[680,406,"Tax authority"],[690,496,"Subcontractor"]];
+ L.forEach(([x,y,s,o])=>txt(svg,x,y,s,o||{}));
+ txt(svg,24,530,"Outside the border: customers, partners, authorities, cloud services",{anchor:"start",fill:"var(--muted)"});
+})();
+
+/* ---------- reveal on scroll ---------- */
+const io=new IntersectionObserver(es=>es.forEach(en=>{if(!en.isIntersecting)return;en.target.classList.add("on");if(en.target.id==="stats")countUp();io.unobserve(en.target)}),{threshold:.3});
+["houseNet","path","stats"].forEach(id=>io.observe(document.getElementById(id)));
+function countUp(){if(reduce)return;document.querySelectorAll("#stats b").forEach(b=>{const end=+b.dataset.count,suf=b.dataset.suffix||"",t0=performance.now(),d=1400;
+ const step=t=>{const k=Math.min(1,(t-t0)/d),v=Math.round(end*(1-Math.pow(1-k,3)));b.textContent=v.toLocaleString("en-US")+suf;if(k<1)requestAnimationFrame(step)};requestAnimationFrame(step)})}
+
+/* ---------- reading progress ---------- */
+const bar=document.getElementById("progress");
+function prog(){const h=document.documentElement;const max=h.scrollHeight-h.clientHeight;bar.style.transform=`scaleX(${max>0?h.scrollTop/max:0})`}
+addEventListener("scroll",prog,{passive:true});prog();
+})();
+</script>
+</body>
+</html>
